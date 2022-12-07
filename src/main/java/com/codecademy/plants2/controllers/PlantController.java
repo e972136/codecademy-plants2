@@ -4,6 +4,8 @@ import com.codecademy.plants2.entities.Plant;
 import com.codecademy.plants2.repositories.PlantRepository;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -63,5 +65,36 @@ public class PlantController {
         this.plantRepository.deleteById(id);
         return plantToDelete;
 
+    }
+
+    @GetMapping("/plants/search")
+    public List<Plant> searchPlants(
+            @RequestParam(name = "hasFruit",required = false) Boolean hasFruit,
+            @RequestParam(name="maxQuantity",required = false) Integer quantity
+    ){
+        /*if(hasFruit==null || hasFruit ==Boolean.FALSE){
+            return new ArrayList<>();
+        }*/
+        if(hasFruit!=null && hasFruit==true  && quantity!=null){
+            return this.plantRepository.findByHasFruitTrueAndQuantityLessThan(quantity);
+        }
+
+        if(hasFruit!=null && hasFruit==false  && quantity!=null){
+            return this.plantRepository.findByHasFruitFalseAndQuantityLessThan(quantity);
+        }
+
+        if(hasFruit!=null && hasFruit==false){
+            return this.plantRepository.findByHasFruitTrue();
+        }
+
+        if(hasFruit!=null && hasFruit==false){
+            return this.plantRepository.findByHasFruitFalse();
+        }
+
+        if(quantity!=null){
+            return this.plantRepository.findByQuantityLessThan(quantity);
+        }
+
+        return this.plantRepository.findByHasFruitTrue();
     }
 }
